@@ -1,5 +1,5 @@
 project('gst-openhevc', 'c', 'cpp',
-  version : '0.0.1.1',
+  version : '1.14.4',
   meson_version : '>= 0.46.0',
   default_options : [ 'warning_level=1',
                       'buildtype=debugoptimized' ])
@@ -82,30 +82,6 @@ endif
 # Disable strict aliasing
 if cc.has_argument('-fno-strict-aliasing')
   add_project_arguments('-fno-strict-aliasing', language: 'c')
-endif
-
-if gst_dep.type_name() == 'internal'
-    gst_proj = subproject('gstreamer')
-
-    if not gst_proj.get_variable('gst_debug')
-        message('GStreamer debug system is disabled')
-        add_project_arguments('-Wno-unused', language: 'c')
-    else
-        message('GStreamer debug system is enabled')
-    endif
-else
-    # We can't check that in the case of subprojects as we won't
-    # be able to build against an internal dependency (which is not built yet)
-    if not cc.compiles('''
-#include <gst/gstconfig.h>
-#ifdef GST_DISABLE_GST_DEBUG
-#error "debugging disabled, make compiler fail"
-#endif''' , dependencies: gst_dep)
-        message('GStreamer debug system is disabled')
-        add_project_arguments('-Wno-unused', language: 'c')
-    else
-        message('GStreamer debug system is enabled')
-    endif
 endif
 
 warning_flags = [
